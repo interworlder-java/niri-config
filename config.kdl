@@ -1,0 +1,332 @@
+input {
+    keyboard {
+        xkb {
+            layout "us,ru"
+            options "grp:caps_toggle"
+        }
+    }
+
+    touchpad {
+        // off
+        tap
+        // dwt
+        // dwtp
+        // drag false
+        // drag-lock
+        natural-scroll
+        accel-speed 0.0
+        accel-profile "flat"
+        // scroll-method "two-finger"
+        // disabled-on-external-mouse
+    }
+
+    mouse {
+        // off
+        // natural-scroll
+        // accel-speed 0.0
+        accel-profile "flat"
+        // scroll-method "no-scroll"
+    }
+}
+
+output "eDP-1" {
+    // off
+    mode "2560x1600@165"
+
+    scale 1
+
+    transform "normal"
+
+    position x=0 y=0
+}
+
+layout {
+    gaps 10
+
+    center-focused-column "never"
+
+    always-center-single-column
+
+    preset-column-widths {
+        proportion 0.33333
+        proportion 0.5
+        proportion 0.66667
+    }
+
+
+    default-column-width { proportion 0.5; }
+
+    border {
+        // off
+        width 3
+
+        active-color "#83a598"
+
+        inactive-color "#665c54"
+    }
+
+    focus-ring {
+        off
+    }
+
+    // You can enable drop shadows for windows.
+    shadow {
+        on
+
+        softness 30
+
+        spread 10
+
+        offset x=0 y=5
+
+        color "#0007"
+    }
+}
+
+// autostart
+spawn-at-startup "waybar"
+spawn-at-startup "hyprpaper"
+spawn-at-startup "systemctl --user restart hyprpolkitagent.service"
+spawn-at-startup "niri msg output eDP-1 vrr on"
+
+// disable window titlebar
+prefer-no-csd
+
+overview {
+    zoom 0.45
+    // backdrop-color "#1d2021"
+}
+
+hotkey-overlay {
+    // Uncomment this line to disable the "Important Hotkeys" pop-up at startup.
+    // skip-at-startup
+}
+
+screenshot-path null
+
+// Animation settings.
+// The wiki explains how to configure individual animations:
+// https://yalter.github.io/niri/Configuration:-Animations
+animations {
+    // Uncomment to turn off all animations.
+    // off
+
+    // Slow down all animations by this factor. Values below 1 speed them up instead.
+    slowdown 0.5
+}
+
+// Window rules let you adjust behavior for individual windows.
+// Find more information on the wiki:
+// https://yalter.github.io/niri/Configuration:-Window-Rules
+
+// Open the Firefox picture-in-picture player as floating by default.
+window-rule {
+    // This app-id regular expression will work for both:
+    // - host Firefox (app-id is "firefox")
+    // - Flatpak Firefox (app-id is "org.mozilla.firefox")
+    match app-id=r#"firefox$"# title="^Picture-in-Picture$"
+    open-floating true
+}
+
+// Example: block out two password managers from screen capture.
+// (This example rule is commented out with a "/-" in front.)
+/-window-rule {
+    match app-id=r#"^org\.keepassxc\.KeePassXC$"#
+    match app-id=r#"^org\.gnome\.World\.Secrets$"#
+
+    block-out-from "screen-capture"
+
+    // Use this instead if you want them visible on third-party screenshot tools.
+    // block-out-from "screencast"
+}
+
+// Example: enable rounded corners for all windows.
+// (This example rule is commented out with a "/-" in front.)
+window-rule {
+    geometry-corner-radius 0
+    clip-to-geometry true
+}
+
+binds {
+    // Open really nice meny to see hotkeys
+    Alt+Shift+Slash { show-hotkey-overlay; }
+
+    // Suggested binds for running programs: terminal, app launcher, screen locker.
+    Alt+Shift+Return hotkey-overlay-title="Open a Terminal: alacritty" { spawn "alacritty"; }
+    Alt+P hotkey-overlay-title="Run an Application: wofi" { spawn-sh "wofi --show drun"; }
+    Alt+Shift+P hotkey-overlay-title="Run an Command Launcher: wofi" { spawn-sh "wofi --show run"; }
+    Ctrl+Shift+L hotkey-overlay-title="Lock the Screen: hyprlock" { spawn-sh "niri msg action power-off-monitors; hyprlock"; }
+
+    // Example volume keys mappings for PipeWire & WirePlumber.
+    // The allow-when-locked=true property makes them work even when the session is locked.
+    // Using spawn-sh allows to pass multiple arguments together with the command.
+    XF86AudioRaiseVolume allow-when-locked=true { spawn-sh "wpctl set-volume @DEFAULT_AUDIO_SINK@ 0.03+"; }
+    XF86AudioLowerVolume allow-when-locked=true { spawn-sh "wpctl set-volume @DEFAULT_AUDIO_SINK@ 0.03-"; }
+    XF86AudioMute        allow-when-locked=true { spawn-sh "wpctl set-mute @DEFAULT_AUDIO_SINK@ toggle"; }
+    XF86AudioMicMute     allow-when-locked=true { spawn-sh "wpctl set-mute @DEFAULT_AUDIO_SOURCE@ toggle"; }
+
+    // Example brightness key mappings for brightnessctl.
+    // You can use regular spawn with multiple arguments too (to avoid going through "sh"),
+    // but you need to manually put each argument in separate "" quotes.
+    XF86MonBrightnessUp allow-when-locked=true { spawn "brightnessctl" "--class=backlight" "set" "+10%"; }
+    XF86MonBrightnessDown allow-when-locked=true { spawn "brightnessctl" "--class=backlight" "set" "10%-"; }
+
+    // Open/close the Overview: a zoomed-out view of workspaces and windows.
+    // You can also move the mouse into the top-left hot corner,
+    // or do a four-finger swipe up on a touchpad.
+    Alt+O repeat=false { toggle-overview; }
+
+    Alt+Shift+Q repeat=true { close-window; }
+
+    Alt+H     { focus-column-left; }
+    Alt+J     { focus-window-down; }
+    Alt+K     { focus-window-up; }
+    Alt+L     { focus-column-right; }
+
+    Alt+Shift+H     { move-column-left; }
+    Alt+Shift+J     { move-window-down; }
+    Alt+Shift+K     { move-window-up; }
+    Alt+Shift+L     { move-column-right; }
+
+    Alt+Ctrl+H     { focus-monitor-left; }
+    Alt+Ctrl+J     { focus-monitor-down; }
+    Alt+Ctrl+K     { focus-monitor-up; }
+    Alt+Ctrl+L     { focus-monitor-right; }
+
+    Alt+Shift+Ctrl+H     { move-column-to-monitor-left; }
+    Alt+Shift+Ctrl+J     { move-column-to-monitor-down; }
+    Alt+Shift+Ctrl+K     { move-column-to-monitor-up; }
+    Alt+Shift+Ctrl+L     { move-column-to-monitor-right; }
+
+    Alt+Page_Down      { focus-workspace-down; }
+    Alt+Page_Up        { focus-workspace-up; }
+    Alt+U              { focus-workspace-down; }
+    Alt+I              { focus-workspace-up; }
+    Alt+Ctrl+Page_Down { move-column-to-workspace-down; }
+    Alt+Ctrl+Page_Up   { move-column-to-workspace-up; }
+    Alt+Ctrl+U         { move-column-to-workspace-down; }
+    Alt+Ctrl+I         { move-column-to-workspace-up; }
+
+    Alt+Shift+Page_Down { move-workspace-down; }
+    Alt+Shift+Page_Up   { move-workspace-up; }
+    Alt+Shift+U         { move-workspace-down; }
+    Alt+Shift+I         { move-workspace-up; }
+
+    // To avoid scrolling through workspaces really fast, you can use
+    // the cooldown-ms property. The bind will be rate-limited to this value.
+    // You can set a cooldown on any bind, but it's most useful for the wheel.
+    Alt+WheelScrollDown      cooldown-ms=150 { focus-workspace-down; }
+    Alt+WheelScrollUp        cooldown-ms=150 { focus-workspace-up; }
+    Alt+Ctrl+WheelScrollDown cooldown-ms=150 { move-column-to-workspace-down; }
+    Alt+Ctrl+WheelScrollUp   cooldown-ms=150 { move-column-to-workspace-up; }
+
+    Alt+WheelScrollRight      { focus-column-right; }
+    Alt+WheelScrollLeft       { focus-column-left; }
+    Alt+Ctrl+WheelScrollRight { move-column-right; }
+    Alt+Ctrl+WheelScrollLeft  { move-column-left; }
+
+    // Usually scrolling up and down with Shift in applications results in
+    // horizontal scrolling; these binds replicate that.
+    Alt+Shift+WheelScrollDown      { focus-column-right; }
+    Alt+Shift+WheelScrollUp        { focus-column-left; }
+    Alt+Ctrl+Shift+WheelScrollDown { move-column-right; }
+    Alt+Ctrl+Shift+WheelScrollUp   { move-column-left; }
+
+    // For example, with 2 workspaces + 1 empty, indices 3, 4, 5 and so on
+    // will all refer to the 3rd workspace.
+    Alt+1 { focus-workspace 1; }
+    Alt+2 { focus-workspace 2; }
+    Alt+3 { focus-workspace 3; }
+    Alt+4 { focus-workspace 4; }
+    Alt+5 { focus-workspace 5; }
+    Alt+6 { focus-workspace 6; }
+    Alt+7 { focus-workspace 7; }
+    Alt+8 { focus-workspace 8; }
+    Alt+9 { focus-workspace 9; }
+    Alt+Shift+1 { move-column-to-workspace 1; }
+    Alt+Shift+2 { move-column-to-workspace 2; }
+    Alt+Shift+3 { move-column-to-workspace 3; }
+    Alt+Shift+4 { move-column-to-workspace 4; }
+    Alt+Shift+5 { move-column-to-workspace 5; }
+    Alt+Shift+6 { move-column-to-workspace 6; }
+    Alt+Shift+7 { move-column-to-workspace 7; }
+    Alt+Shift+8 { move-column-to-workspace 8; }
+    Alt+Shift+9 { move-column-to-workspace 9; }
+
+    // Switches focus between the current and the previous workspace.
+    Alt+Tab { focus-workspace-previous; }
+
+    // The following binds move the focused window in and out of a column.
+    // If the window is alone, they will consume it into the nearby column to the side.
+    // If the window is already in a column, they will expel it out.
+    Alt+BracketLeft  { consume-or-expel-window-left; }
+    Alt+BracketRight { consume-or-expel-window-right; }
+
+    // Consume one window from the right to the bottom of the focused column.
+    Alt+Comma  { consume-window-into-column; }
+    // Expel the bottom window from the focused column to the right.
+    Alt+Period { expel-window-from-column; }
+
+    Alt+R { switch-preset-column-width; }
+    // Cycling through the presets in reverse order is also possible.
+    // Mod+R { switch-preset-column-width-back; }
+    Alt+Shift+R { switch-preset-window-height; }
+    Alt+Ctrl+R { reset-window-height; }
+    Alt+F { maximize-column; }
+    Alt+Shift+F { fullscreen-window; }
+
+    // Expand the focused column to space not taken up by other fully visible columns.
+    // Makes the column "fill the rest of the space".
+    Alt+Ctrl+F { expand-column-to-available-width; }
+
+    Alt+C { center-column; }
+
+    // Center all fully visible columns on screen.
+    Alt+Ctrl+C { center-visible-columns; }
+
+    Alt+Minus { set-column-width "-10%"; }
+    Alt+Equal { set-column-width "+10%"; }
+
+    // Finer height adjustments when in column with other windows.
+    Alt+Shift+Minus { set-window-height "-10%"; }
+    Alt+Shift+Equal { set-window-height "+10%"; }
+
+    // Move the focused window between the floating and the tiling layout.
+    Alt+V       { toggle-window-floating; }
+    Alt+Shift+V { switch-focus-between-floating-and-tiling; }
+
+    // Toggle tabbed column display mode.
+    // Windows in this column will appear as vertical tabs,
+    // rather than stacked on top of each other.
+    Alt+W { toggle-column-tabbed-display; }
+
+    // Actions to switch layouts.
+    // Note: if you uncomment these, make sure you do NOT have
+    // a matching layout switch hotkey configured in xkb options above.
+    // Having both at once on the same hotkey will break the switching,
+    // since it will switch twice upon pressing the hotkey (once by xkb, once by niri).
+    // Mod+Space       { switch-layout "next"; }
+    // Mod+Shift+Space { switch-layout "prev"; }
+
+    Print { screenshot; }
+    Ctrl+Print { screenshot-screen; }
+    Alt+Print { screenshot-window; }
+
+    // Applications such as remote-desktop clients and software KVM switches may
+    // request that niri stops processing the keyboard shortcuts defined here
+    // so they may, for example, forward the key presses as-is to a remote machine.
+    // It's a good idea to bind an escape hatch to toggle the inhibitor,
+    // so a buggy application can't hold your session hostage.
+    //
+    // The allow-inhibiting=false property can be applied to other binds as well,
+    // which ensures niri always processes them, even when an inhibitor is active.
+    Alt+Escape allow-inhibiting=false { toggle-keyboard-shortcuts-inhibit; }
+
+    // The quit action will show a confirmation dialog to avoid accidental exits.
+    Alt+M { quit; }
+    Ctrl+Alt+Delete { quit; }
+
+    // Powers off the monitors. To turn them back on, do any input like
+    // moving the mouse or pressing any other key.
+    XF86Launch1 { power-off-monitors; }
+}

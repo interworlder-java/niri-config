@@ -85,7 +85,7 @@ layout {
 
 // autostart
 spawn-at-startup "waybar"
-spawn-at-startup "hyprpaper"
+// spawn-at-startup "hyprpaper"
 spawn-at-startup "systemctl --user restart hyprpolkitagent.service"
 spawn-at-startup "niri msg output eDP-1 vrr on"
 
